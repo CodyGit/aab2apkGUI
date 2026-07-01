@@ -1,0 +1,84 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'aab2apkGUI v__VERSION__'
+          releaseBody: |
+            ## 下载
+
+            | 平台 | 文件 |
+            |------|------|
+            | Windows | `.msi` 或 `.exe` 安装包 |
+            | macOS | `.dmg` 安装包 |
+
+            ## 使用说明
+
+            1. 安装 [JDK 11+](https://adoptium.net/download/)
+            2. 下载 [bundletool.jar](https://github.com/google/bundletool/releases)
+            3. 启动后在设置中配置 bundletool 路径
+          releaseDraft: false
+          prerelease: false
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-darwin
+
+      - name: Install frontend dependencies
+        run: npm install
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'aab2apkGUI v__VERSION__'
+          releaseBody: |
+            ## 下载
+
+            | 平台 | 文件 |
+            |------|------|
+            | Windows | `.msi` 或 `.exe` 安装包 |
+            | macOS | `.dmg` 安装包 |
+
+            ## 使用说明
+
+            1. 安装 [JDK 11+](https://adoptium.net/download/)
+            2. 下载 [bundletool.jar](https://github.com/google/bundletool/releases)
+            3. 启动后在设置中配置 bundletool 路径
+          releaseDraft: false
+          prerelease: false
