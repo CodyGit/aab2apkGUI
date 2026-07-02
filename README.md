@@ -30,21 +30,58 @@
 
 ## 构建
 
+### 环境准备
+
+1. **Node.js 20+** — 前端构建
+2. **Rust 工具链** — 后端编译
+   ```bash
+   # Windows
+   curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+   # 或下载安装包 https://rustup.rs/
+   ```
+3. **系统依赖**（Tauri 要求）
+
+   | 平台 | 依赖 |
+   |------|------|
+   | Windows | WebView2（Win10+ 已内置）；MSVC 目标需 [VS Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)，GNU 目标需 [MinGW-w64](https://www.mingw-w64.org/) |
+   | macOS | Xcode Command Line Tools：`xcode-select --install` |
+   | Linux | `sudo apt install libwebkit2gtk-4.1-dev libgtk-3-dev` |
+
+### 构建步骤
+
 ```bash
-# 安装前端依赖
+# 1. 克隆仓库
+git clone https://github.com/<user>/aab2apkGUI.git
+cd aab2apkGUI
+
+# 2. 安装前端依赖
 npm install
 
-# 安装 Rust 工具链（如未安装）
-# https://rustup.rs/
-
-# 开发运行
+# 3. 开发运行（热重载）
 npx tauri dev
 
-# 生产构建
+# 4. 生产构建
 npx tauri build
 ```
 
-Windows 下使用 GNU 工具链需 MinGW-w64 在 PATH 中。
+### 构建产物位置
+
+| 平台 | 路径 |
+|------|------|
+| Windows | `src-tauri/target/release/bundle/nsis/` (`.exe`) `msi/` (`.msi`) |
+| macOS | `src-tauri/target/release/bundle/dmg/` (`.dmg`) |
+| Linux | `src-tauri/target/release/bundle/deb/` (`.deb`) `appimage/` (`.AppImage`) |
+
+### CI 构建
+
+推送带 `v` 前缀的 tag 自动触发 GitHub Actions 构建并发布 Release：
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+也可在 Actions 页面手动触发（`workflow_dispatch`）。
 
 ## 技术栈
 
