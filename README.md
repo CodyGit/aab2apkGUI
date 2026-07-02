@@ -2,6 +2,33 @@
 
 将 Android App Bundle (`.aab`) 转换为可安装的 APK 文件的跨平台桌面工具。
 
+![aab2apkGUI_snapshot](aab2apkGUI_snapshot.png)
+
+## 快速上手
+
+### 第一步：下载安装
+
+从 [Releases](../../releases) 页面下载最新版本的安装包：
+
+- **Windows**：下载 `aab2apkGUI_x.x.x_x64-setup.exe`，双击安装
+- **macOS**：下载 `aab2apkGUI_x.x.x_x64.dmg`，拖入 Applications 文件夹
+
+### 第二步：安装依赖工具
+
+软件运行需要两个外部工具：
+
+1. **JDK 11+**：[下载 Adoptium OpenJDK](https://adoptium.net/download/)，安装后确保 `java` 已加入系统 PATH（打开终端输入 `java --version` 验证）
+2. **bundletool.jar**：[下载最新版](https://github.com/google/bundletool/releases)，保存到本地任意目录
+
+### 第三步：配置并转换
+
+1. 启动 aab2apkGUI
+2. 点击右上角 ⚙ 图标打开设置，选择你下载的 `bundletool.jar` 路径，保存
+3. 将 `.aab` 文件拖入窗口（或点击选择）
+4. 选择签名证书（默认已提供 debug 证书，开箱即用）
+5. 点击 **开始转换**，等待完成
+6. 点击生成的 APK 文件名即可打开所在目录
+
 ## 功能
 
 - **拖拽或选择 .aab 文件**，自动读取基本信息并设置输出目录

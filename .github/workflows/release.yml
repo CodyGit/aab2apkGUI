@@ -5,12 +5,38 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      version:
+        description: '版本号 (如 1.0.0)'
+        required: true
+        default: '0.0.0'
 
 jobs:
   build-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set version from tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VER="${{ github.event.inputs.version }}"
+          else
+            VER="${{ github.ref_name }}"
+            VER="${VER#v}"
+          fi
+          echo "APP_VERSION=$VER" >> $GITHUB_ENV
+
+      - name: Update version in tauri.conf.json
+        shell: pwsh
+        run: |
+          $ver = "${{ env.APP_VERSION }}"
+          $path = "src-tauri/tauri.conf.json"
+          $json = Get-Content $path -Raw | ConvertFrom-Json
+          $json.version = $ver
+          $json | ConvertTo-Json -Depth 10 | Set-Content $path
+          Write-Output "Version set to $ver"
 
       - uses: actions/setup-node@v4
         with:
@@ -28,7 +54,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'aab2apkGUI v__VERSION__'
+          releaseName: 'aab2apkGUI v${{ env.APP_VERSION }}'
           releaseBody: |
             ## 下载
 
@@ -50,6 +76,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set version from tag
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VER="${{ github.event.inputs.version }}"
+          else
+            VER="${{ github.ref_name }}"
+            VER="${VER#v}"
+          fi
+          echo "APP_VERSION=$VER" >> $GITHUB_ENV
+
+      - name: Update version in tauri.conf.json
+        run: |
+          sed -i '' "s/\"version\": \"[^\"]*\"/\"version\": \"$APP_VERSION\"/" src-tauri/tauri.conf.json
+          echo "Version set to $APP_VERSION"
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -66,7 +108,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tagName: ${{ github.ref_name }}
-          releaseName: 'aab2apkGUI v__VERSION__'
+          releaseName: 'aab2apkGUI v${{ env.APP_VERSION }}'
           releaseBody: |
             ## 下载
 
