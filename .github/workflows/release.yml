@@ -58,10 +58,12 @@ jobs:
           releaseBody: |
             ## 下载
 
-            | 平台 | 文件 |
-            |------|------|
-            | Windows | `.msi` 或 `.exe` 安装包 |
-            | macOS | `.dmg` 安装包 |
+            | 平台 | 文件 | 说明 |
+            |------|------|------|
+            | Windows | Portable (`.exe`) | 免安装，下载即用 |
+            | Windows | NSIS (`.exe`) | 安装版 |
+            | Windows | MSI (`.msi`) | 安装版 |
+            | macOS | DMG (`.dmg`) | 安装版 |
 
             ## 使用说明
 
@@ -70,6 +72,22 @@ jobs:
             3. 启动后在设置中配置 bundletool 路径
           releaseDraft: false
           prerelease: false
+
+      - name: Upload portable exe
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PORTABLE="src-tauri/target/release/aab2apk-gui.exe"
+          if [ -f "$PORTABLE" ]; then
+            TAG="${{ github.ref_name }}"
+            UPLOAD="aab2apkGUI_${{ env.APP_VERSION }}_portable.exe"
+            cp "$PORTABLE" "$UPLOAD"
+            gh release upload "$TAG" "$UPLOAD" --clobber
+            echo "Uploaded $UPLOAD"
+          else
+            echo "Portable exe not found at $PORTABLE"
+          fi
 
   build-macos:
     runs-on: macos-latest
@@ -112,10 +130,12 @@ jobs:
           releaseBody: |
             ## 下载
 
-            | 平台 | 文件 |
-            |------|------|
-            | Windows | `.msi` 或 `.exe` 安装包 |
-            | macOS | `.dmg` 安装包 |
+            | 平台 | 文件 | 说明 |
+            |------|------|------|
+            | Windows | Portable (`.exe`) | 免安装，下载即用 |
+            | Windows | NSIS (`.exe`) | 安装版 |
+            | Windows | MSI (`.msi`) | 安装版 |
+            | macOS | DMG (`.dmg`) | 安装版 |
 
             ## 使用说明
 
